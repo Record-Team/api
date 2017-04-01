@@ -1,0 +1,10 @@
+{
+    "user": "LazyAPI",
+    "password": "IDIHYmMA0oKcAYx",
+    "server": "10.91.5.64",
+    "database": "SharPay",
+    "options": {
+        "encrypt": true,
+        "abortTransactionOnError": true
+    }
+}

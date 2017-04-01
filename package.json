@@ -1,0 +1,25 @@
+{
+  "name": "sql-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "server": "node server.js",
+    "build-dev": "webpack",
+    "build-prod": "set NODE_ENV=production && webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.16.0",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.1",
+    "http": "0.0.0",
+    "mssql": "^3.3.0",
+    "node-libs-browser": "^0.4.1"
+  },
+  "engines": {
+    "node": "7.7.4"
+  }
+}

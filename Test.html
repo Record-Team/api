@@ -1,0 +1,138 @@
+<html>
+
+<body>
+    <script>
+        const SERVICE_ERR_MSG = 'Ошибка сервиса. Попробуйте позже';
+
+        function FetchApi(params) {
+            let { url, queryParams, methodType = 'GET', showModalError = false } = params;
+
+            var _method = methodType.toUpperCase();
+            var _query = (_method === 'GET' && queryParams) ? ('?' + objToUrlParams(queryParams)) : '';
+            var _url = url + _query;
+            var _body = _method === 'GET' ? null : JSON.stringify(queryParams);
+
+
+            return new Promise(function (resolve, reject) {
+                var XHR = ("onload" in new XMLHttpRequest()) ? XMLHttpRequest : XDomainRequest;
+                var xhr = new XHR();
+                var isDone = false;
+
+                xhr.open(_method, _url, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('Accept', 'application/json');
+                xhr.timeout = 120 * 1000;
+                xhr.send(_body);
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState != 4 && !isDone) return;
+                    isDone = true;
+                    var json = null;
+                    try {
+                        var json = JSON.parse(xhr.responseText);
+                    }
+                    catch (e) {
+                        console.log('Caught error ' + e.name + ":" + e.message + "\n" + e.stack);
+                    }
+                    finally {
+                        if (xhr.status === 200 && json) {
+                            resolve(json);
+                        }
+                        else {
+                            reject(json);
+                        }
+                    }
+                }
+
+            });
+        }
+
+        const errorHandlers = {
+            401: function () {
+                location.pathname = _ROOT_URL_ + '/login';
+            }
+        }
+
+
+        const objToUrlParams = function (obj) {
+            var a = [];
+            for (var f in obj) {
+                if (obj[f] && obj.hasOwnProperty(f))
+                    a.push(f + '=' + obj[f]);
+            }
+            return a.join('&');
+        }
+
+        const cutApiMessage = function (str) {
+            if (!str) return str
+            return /^Operation failed. '.+'$/.test(str)
+                ? str.substring(str.length - 1, 1).substring(18)
+                : str;
+        }
+
+        var json = {
+            // "login": "user",
+            // "password": "secretpassword",
+
+            // "parameters":
+            // [
+            //     {
+            //         "name": "pagenumber",
+            //         "value": "1",
+            //         "direction": "input"
+            //     },
+            //     {
+            //         "name": "pagesize",
+            //         "value": "3",
+            //         "direction": "input"
+            //     }
+            // ],
+            // "fields":
+            // [
+            //     {
+            //         "name": "field1"
+            //     },
+            //     {
+            //         "name": "field2"
+            //     }
+            // ]
+        }
+    </script>
+
+    <div>
+        parameters: <textarea style='width:100%; height: 200px' id=json></textarea>
+        </br>
+        url: <input style='width: 100%' id=url />
+        </br>
+        <input style='margin: 10px; padding: 15px' type=button id=run value='Go' />
+    </div>
+
+    <div>
+        result: <textarea style='width:100%; height: 300px' id=result></textarea>
+    </div>
+
+    <script>
+        var jsonCnt = document.getElementById('json');
+        jsonCnt.innerText = JSON.stringify(json);
+
+        var url = window.location.origin + "/api/API.Images";//"http://localhost:8080/api/API.Images";
+        var urlCnt = document.getElementById('url');
+        urlCnt.value = url;
+
+        document.getElementById("run").onclick = function () {
+            var url = urlCnt.value;
+            var json = JSON.parse(jsonCnt.value || "{}");
+            FetchApi({ url: url, queryParams: json, methodType: 'POST' })
+                .then(x => {
+                    var resultCnt = document.getElementById('result');
+                    resultCnt.value = JSON.stringify(x);
+                })
+                .catch(x => {
+                    var resultCnt = document.getElementById('result');
+                    resultCnt.value = 'Ошибка: ' + x;
+                })
+        }
+    </script>
+</body>
+
+</html>
